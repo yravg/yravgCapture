@@ -19,8 +19,9 @@
 
   let mode = 'annotate';
   let armed = false;
+  let scrollOn = true; // wheel passes through the Orca overlay to the page
   const annotations = [];
-  try { chrome.storage.local.get('mode', (v) => { if (MODES[v.mode]) { mode = v.mode; paint(); } }); } catch (e) {}
+  try { chrome.storage.local.get(['mode', 'scroll'], (v) => { if (MODES[v.mode]) mode = v.mode; if (v.scroll === false) scrollOn = false; paint(); }); } catch (e) {}
 
   const host = document.createElement('div');
   host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;left:0;top:0;';
@@ -70,6 +71,9 @@
     const caret = $(`<button aria-label="Choose capture mode" title="Mode"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>`);
     caret.onclick = openMenu;
     bar.append(main, caret);
+    const sc = $(`<button title="Let the mouse wheel scroll the page while picking" aria-pressed="${scrollOn}">Scroll: ${scrollOn ? 'On' : 'Off'}</button>`);
+    sc.onclick = () => { scrollOn = !scrollOn; try { chrome.storage.local.set({ scroll: scrollOn }); } catch (e) {} paint(); };
+    bar.append(sc);
     if (annotations.length) {
       const c = $(`<button title="Copy all annotations">Copy <span class="badge">${annotations.length}</span></button>`);
       c.onclick = () => copy(F.formatBrowserAnnotationsAsMarkdown(annotations, { includeDiagnostics: true }));
@@ -126,8 +130,33 @@
     const r = await call({ type: 'arm' });
     if (!r.ok) { document.removeEventListener('yravg-orca-result', onResult); onResult = null; return toast('Cannot run on this page'); }
     armed = true;
+    raise();
     paint();
   }
+
+  // The Orca overlay sits in the top layer; re-show our host as a popover so the bar stays above it.
+  function raise() { try { host.hidePopover(); host.showPopover(); } catch (e) {} }
+
+  // The overlay swallows wheel events: scroll the nearest scrollable ancestor under the pointer ourselves.
+  function onWheel(e) {
+    if (!armed || !scrollOn || e.ctrlKey) return;
+    const ov = document.getElementById('__orca-grab-host');
+    let el = null;
+    if (ov) { ov.style.pointerEvents = 'none'; el = document.elementFromPoint(e.clientX, e.clientY); ov.style.pointerEvents = 'all'; }
+    let dx = e.deltaX, dy = e.deltaY;
+    if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+    const room = (n) => {
+      const c = getComputedStyle(n);
+      const y = /(auto|scroll)/.test(c.overflowY) && dy && (dy > 0 ? n.scrollTop + n.clientHeight < n.scrollHeight : n.scrollTop > 0);
+      const x = /(auto|scroll)/.test(c.overflowX) && dx && (dx > 0 ? n.scrollLeft + n.clientWidth < n.scrollWidth : n.scrollLeft > 0);
+      return x || y;
+    };
+    for (; el && el !== document.documentElement && el !== document.body; el = el.parentElement) {
+      if (room(el)) { el.scrollBy(dx, dy); e.preventDefault(); return; }
+    }
+    window.scrollBy(dx, dy); e.preventDefault();
+  }
+  window.addEventListener('wheel', onWheel, { capture: true, passive: false });
 
   function composer(payload) {
     const t = payload.target, rc = t.rectViewport;
@@ -195,7 +224,7 @@
     root.append(wrap, tools);
   }
 
-  function destroy() { cancelPick(); host.remove(); window.removeEventListener('keydown', esc, true); delete window.__yravgCap; }
+  function destroy() { cancelPick(); host.remove(); window.removeEventListener('keydown', esc, true); window.removeEventListener('wheel', onWheel, true); delete window.__yravgCap; }
   const esc = (e) => { if (e.key === 'Escape' && armed) { cancelPick(); paint(); } };
   window.addEventListener('keydown', esc, true);
 
@@ -206,6 +235,8 @@
   });
 
   window.__yravgCap = { destroy };
+  host.popover = 'manual';
   document.documentElement.appendChild(host);
+  raise();
   paint();
 })();

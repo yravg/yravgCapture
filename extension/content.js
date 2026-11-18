@@ -51,8 +51,14 @@
 
   const toast = (msg) => { remove('.toast'); const t = $(`<div class="toast"></div>`); t.textContent = msg; root.appendChild(t); setTimeout(() => t.remove(), 2200); };
   const copy = async (text) => {
-    try { await navigator.clipboard.writeText(text); toast('Copied'); }
-    catch (e) { toast('Copy blocked by the page'); }
+    try { await navigator.clipboard.writeText(text); return toast('Copied'); } catch (e) { /* no focus / activation: fall back */ }
+    // execCommand works without document focus when the extension holds clipboardWrite.
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.documentElement.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove();
+    toast(ok ? 'Copied' : 'Copy blocked by the page');
   };
   const call = (msg) => new Promise((res) => chrome.runtime.sendMessage(msg, (r) => res(r || { ok: false, error: chrome.runtime.lastError?.message })));
 

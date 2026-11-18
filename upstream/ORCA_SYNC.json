@@ -1,0 +1,20 @@
+{
+  "repo": "stablyai/orca",
+  "ref": "main",
+  "sha": "5a28037b3f82c10b6c4454b38953d92940d11be4",
+  "syncedAt": "2026-11-18T01:15:53.677Z",
+  "files": {
+    "src/main/browser/element-grab/grab-guest-script.ts": "b643cb5f2eacae2a0876a60d4b97efb72a24a172ccb71ef81fa5038e6da78af5",
+    "src/main/browser/element-grab/grab-guest-foundation-script.ts": "13fc745951be63b7915e50d8fabb2af1c73823f2b11180f35ef16f97fe564274",
+    "src/main/browser/element-grab/grab-guest-content-script.ts": "79ed729f2801459827648779f7037449c9edc261e0e3e5a22cbaed30a74bcf7c",
+    "src/main/browser/element-grab/grab-guest-element-context-script.ts": "8b91de9228b46204e6297f305fb2f1e9c0c6ab713c03f25a6670414b76bc11d9",
+    "src/main/browser/element-grab/grab-guest-react-script.ts": "21028f5f5dce2268774f785abedd41f6a1f7b0bc8f1e327a2ee5bd840a1775c5",
+    "src/main/browser/element-grab/grab-guest-overlay-script.ts": "d75beb7e68d06cd8d5882b63bd50fa93895d1bd6d7cc9102f03ae00469ca574f",
+    "src/main/browser/element-grab/grab-guest-selection-scripts.ts": "24a329e40dc14d732e15ba2debbdb44de62afc74ca8b0b7b13f7f2bf620ca224",
+    "src/shared/browser/element-grab/browser-composed-tree-script.ts": "75f1915c2c7f829a749539c82103f1d96459ff3b3333a17ac169a3ee23a74525",
+    "src/shared/browser/annotations/browser-annotation-viewport-bridge.ts": "ef7e318499548bc1faf8fb6c531d9d67e8404954484362f4d488e3bdac07e3af",
+    "src/shared/browser/annotations/browser-annotation-output.ts": "34735b6fc54ef6dffb3f2626d49f82f3aade4e702361e51c470c1d0e0f18e9eb",
+    "src/shared/file-access/cross-platform-path.ts": "0bfa7e5dc66585be96f36345b8411fdc4107aba84fb3a83aa51aba7a1e2ffe47",
+    "src/renderer/src/components/browser-pane/annotate/grab/GrabConfirmationSheet.tsx": "aa8b1deba61be569ee73bf09ebc857e38d615554a9dcf0b62f513d812fc018b1"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "yravgCapture",
+  "description": "Annotate / Grab / Draw on any page (synced from Orca) plus the original Robo Capture JSON picker.",
+  "version": "1.0.0",
+  "icons": { "16": "icon16.png", "48": "icon48.png", "128": "icon128.png" },
+  "action": { "default_title": "yravgCapture - click to open the capture bar" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["activeTab", "scripting", "storage", "clipboardWrite"],
+  "commands": {
+    "mode-annotate": { "suggested_key": { "default": "Alt+Shift+N" }, "description": "Annotate page element" },
+    "mode-grab": { "suggested_key": { "default": "Alt+Shift+G" }, "description": "Grab page element" },
+    "mode-draw": { "suggested_key": { "default": "Alt+Shift+D" }, "description": "Draw on screenshot" }
+  },
+  "web_accessible_resources": [
+    { "resources": ["fonts/*.woff2"], "matches": ["<all_urls>"] }
+  ]
+}

@@ -1,0 +1,25 @@
+name: Sync Orca
+on:
+  schedule: [{ cron: '0 6 * * 1' }]   # Mondays 06:00 UTC
+  workflow_dispatch:
+permissions: { contents: write, pull-requests: write }
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - run: node scripts/sync-orca.mjs
+        env: { GITHUB_TOKEN: '${{ github.token }}' }
+      - run: node scripts/test.mjs
+      - name: Open PR when upstream changed
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          git diff --quiet && { echo "no upstream change"; exit 0; }
+          sha=$(node -p "require('./upstream/ORCA_SYNC.json').sha.slice(0,8)")
+          git config user.name "github-actions"; git config user.email "actions@users.noreply.github.com"
+          git checkout -b "sync/orca-$sha"
+          git add -A; git commit -m "chore: sync Orca grab/annotate @ $sha"
+          git push -u origin HEAD
+          gh pr create --title "Sync Orca @ $sha" --body "Automated sync of stablyai/orca grab/annotate engine. Tests passed. Load extension/ unpacked and try Annotate + Grab before merging."

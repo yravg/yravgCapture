@@ -1,8 +1,8 @@
 {
   "repo": "stablyai/orca",
   "ref": "main",
-  "sha": "5a28037b3f82c10b6c4454b38953d92940d11be4",
-  "syncedAt": "2026-11-18T01:15:53.677Z",
+  "sha": "6e4ebc83d0059cfadc354ad32b7f4a8f71325e2a",
+  "syncedAt": "2026-11-23T17:28:44.029Z",
   "files": {
     "src/main/browser/element-grab/grab-guest-script.ts": "b643cb5f2eacae2a0876a60d4b97efb72a24a172ccb71ef81fa5038e6da78af5",
     "src/main/browser/element-grab/grab-guest-foundation-script.ts": "13fc745951be63b7915e50d8fabb2af1c73823f2b11180f35ef16f97fe564274",
